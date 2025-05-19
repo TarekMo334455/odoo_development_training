@@ -15,7 +15,7 @@
     "category": "Uncategorized",
     "version": "0.1",
     # any module necessary for this one to work correctly
-    "depends": ["base"],
+    "depends": ["base", "website"],
     # always loaded
     "data": [
         "security/ir.model.access.csv",
@@ -24,6 +24,9 @@
         "views/scraped_job_view.xml",
         "views/scraped_blog_view.xml",
         "views/scraped_page_view.xml",
+        "views/blog_templates.xml",
+        "views/job_templates.xml",
+        "views/page_templates.xml",
     ],
     "application": True,
     "installable": True,

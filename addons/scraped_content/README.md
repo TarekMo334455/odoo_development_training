@@ -1,197 +1,162 @@
 # Web Content Scraper for Odoo (scraped_content)
 
-A comprehensive Odoo module for scraping and managing web content with external Python scripts integration.
+A comprehensive Odoo module for scraping and managing web content with enhanced data validation and idempotency support.
 
-## 🌟 Features
+## 📋 Setup Instructions
 
-### Content Management
-
-- Store scraped web pages content
-- LinkedIn jobs tracking
-- TechCrunch articles collection
-- VentureBeat content management
-- Content status tracking (Visited/Not Visited)
-
-### Data Integration
-
-- JSON-RPC API integration
-- Bulk data import
-- External scripts support
-- Multiple content types handling
-
-## 📋 Prerequisites
-
+### Prerequisites
 - Python 3.8+
 - Odoo 17.0
-- Required Python packages:
+- Docker and Docker Compose
 
+### Required Python Packages
 ```bash
-pip install requests beautifulsoup4 selenium
+pip install requests beautifulsoup4 selenium xlsxwriter typing
 ```
 
-## 🔧 Installation
-
+### Environment Setup
 1. Clone the repository:
-
 ```bash
 git clone <repository-url>
 cd odoo_projects
 ```
 
-2. Copy module to Odoo addons:
-
+2. Create virtual environment:
 ```bash
-cp -r addons/scraped_content /path/to/odoo/addons/
-```
-
-3. Update Odoo modules list and install:
-
-```bash
-docker exec -it odoo_projects-odoo-1 odoo -u scraped_content -d odoo_db
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+.\venv\Scripts\activate   # Windows
 ```
 
 ## 🤖 Running the Scrapers
 
-### 1. Static Page Scraping
+### 1. Configure Scraping Settings
+Edit `external_scripts/config.py`:
+```python
+SCRAPING_CONFIG = {
+    "linkedin": {
+        "search_terms": ["python developer", "odoo developer"],
+        "location": "United States"
+    },
+    "techcrunch": {
+        "categories": ["startups", "technology"],
+        "max_articles": 50
+    },
+    "venturebeat": {
+        "sections": ["ai", "cloud"]
+    }
+}
+```
 
+### 2. Run Individual Scrapers
 ```bash
 cd external_scripts
+
+# VentureBeat Pages
 python static_page_scraping.py
-```
 
-### 2. LinkedIn Jobs Scraping
-
-```bash
+# LinkedIn Jobs
 python linkedin_scraping.py
-```
 
-### 3. Blog Scraping
-
-```bash
+# TechCrunch Articles
 python blog_scraping.py
 ```
 
-## 📤 Pushing Data to Odoo
+## 📤 Running the Data Pusher
 
-1. Configure connection settings in `json_rpc_pusher.py`:
-
+### 1. Configure API Settings
+Edit `external_scripts/json_rpc_pusher.py`:
 ```python
-url = "http://localhost:8017/jsonrpc"
-db = "odoo_db"
-username = "admin"
-password = "password"
+api = OdooAPI(
+    url="http://localhost:8017/jsonrpc",
+    db="odoo_db",
+    username="admin",
+    password="password"
+)
 ```
 
-2. Run the data pusher:
-
+### 2. Execute Pusher Script
 ```bash
 python json_rpc_pusher.py
 ```
 
-## 🔍 Module Usage
-
-### Models Available:
-
-- `scraped.page`: Web pages content
-- `scraped.job`: LinkedIn jobs
-- `scraped.blog`: Blog articles
-
-### Views:
-
-- List view for all scraped content
-- Form view for detailed content
-- Search filters for content status
-
-### Access Rights:
-
-- Manager: Full access
-- User: Read-only access
-
-## 📁 File Structure
-
-```
-scraped_content/
-├── __init__.py
-├── __manifest__.py
-├── models/
-│   ├── __init__.py
-│   ├── scraped_page.py
-│   ├── scraped_job.py
-│   └── scraped_blog.py
-├── security/
-│   └── ir.model.access.csv
-├── views/
-│   ├── scraped_page_view.xml
-│   ├── scraped_job_view.xml
-│   └── scraped_blog_view.xml
-└── external_scripts/
-    ├── static_page_scraping.py
-    ├── linkedin_scraping.py
-    ├── blog_scraping.py
-    └── json_rpc_pusher.py
+### 3. Monitor Logs
+```bash
+tail -f json_rpc_pusher.log
 ```
 
-## 🔄 Workflow
+## 🔧 Installing Odoo Module
 
-1. **Setup Scraping Environment**:
+1. Copy module to Odoo addons:
+```bash
+cp -r addons/scraped_content /path/to/odoo/addons/
+```
 
-   ```bash
-   cd external_scripts
-   pip install -r requirements.txt
-   ```
+2. Set proper permissions:
+```bash
+sudo chown -R odoo:odoo /path/to/odoo/addons/scraped_content
+```
 
-2. **Run Scrapers**:
+3. Update module list in Odoo:
+```bash
+docker exec -it odoo_projects-odoo-1 odoo -u scraped_content -d odoo_db
+```
 
-   ```bash
-   # Run all scrapers
-   python static_page_scraping.py
-   python linkedin_scraping.py
-   python blog_scraping.py
-   ```
+4. Install via Odoo interface:
+- Go to Apps
+- Remove "Apps" filter
+- Search for "Scraped Content"
+- Click Install
 
-3. **Push to Odoo**:
+## 🌐 Viewing Data on Odoo Website
 
-   ```bash
-   python json_rpc_pusher.py
-   ```
+### 1. Access Scraped Content
+- Navigate to: `http://localhost:8017/web`
+- Login with admin credentials
+- Go to Scraped Content menu
 
-4. **View in Odoo**:
-   - Go to Scraped Content menu
-   - Browse scraped pages, jobs, and blogs
-   - Filter and search content
+### 2. View Different Content Types
+- **Jobs**: `http://localhost:8017/jobs`
+  - Browse LinkedIn job listings
+  - Filter by company, location
+  - Track application status
 
-## ⚙️ Configuration
+- **Blogs**: `http://localhost:8017/blogs`
+  - Read TechCrunch articles
+  - Filter by publication date
+  - Mark as read/unread
 
-1. **Odoo Settings**:
+- **Pages**: `http://localhost:8017/pages`
+  - View VentureBeat content
+  - Track visit status
+  - Search by title/content
 
-   - Install module
-   - Configure user access rights
-   - Setup automated actions (optional)
+### 3. Content Management
+- Use status filters to track content
+- Enable/disable website publication
+- Manage content visibility
 
-2. **Scraper Settings**:
+## 🔍 Key Features
 
-   - Update URLs in scraping scripts
-   - Configure scraping intervals
-   - Set content filters
+### Enhanced Data Validation
+- Automatic field validation
+- Required field checking
+- Data type verification
 
-3. **API Connection**:
-   - Configure Odoo URL
-   - Set database name
-   - Update credentials
+### Idempotency Support
+- Duplicate prevention
+- Source URL tracking
+- Update existing records
 
-## 🐛 Troubleshooting
+### Error Handling
+- Comprehensive logging
+- Retry mechanism
+- Detailed error messages
 
-1. **Connection Issues**:
-
-   ```bash
-   # Test Odoo connection
-   curl http://localhost:8017
-   ```
-
-2. **Script Errors**:
-   - Check Python dependencies
-   - Verify file permissions
-   - Review log files
+### Security
+- Role-based access control
+- API authentication
+- Data validation
 
 ## 📝 License
 

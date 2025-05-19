@@ -17,4 +17,9 @@ class ScrapedPage(models.Model):
         string="Status",
 
     )
+    website_published = fields.Boolean(string="Published on Website", default=True)
+    website_url = fields.Char(compute="_compute_website_url", string="Website URL")
 
+    def _compute_website_url(self):
+        for record in self:
+            record.website_url = f"/page/{record.id}"

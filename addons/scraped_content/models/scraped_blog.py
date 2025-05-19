@@ -6,7 +6,7 @@ class ScrapedBlog(models.Model):
     _description = "Scraped Blog"
     _rec_name = "title"
 
-    title = fields.Char(string="Title")
+    title = fields.Char(string="Title", required=True)
     summary = fields.Char(string="Summary")
     content = fields.Char(string="Content")
     source_url = fields.Char(string="Source URL")

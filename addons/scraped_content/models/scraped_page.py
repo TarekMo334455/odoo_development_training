@@ -6,9 +6,9 @@ class ScrapedPage(models.Model):
     _description = "Scraped Page"
     _rec_name = "title"
 
-    title = fields.Char(string="Title")
+    title = fields.Char(string="Title", required=True)
     content = fields.Char(string="Content")
-    source_url = fields.Char(string="Source URL")
+    source_url = fields.Char(string="Source URL", required=True)
     status = fields.Selection(
         selection=[
             ("vist", "Vist"),

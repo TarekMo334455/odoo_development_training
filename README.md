@@ -1,6 +1,6 @@
 # 🧩 Odoo Development Training
 
-A comprehensive repository containing custom Odoo modules built for learning and real-world applications.
+A comprehensive repository containing custom Odoo modules built for learning.
 
 ## 📁 Repository Structure
 
